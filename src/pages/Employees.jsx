@@ -14,6 +14,7 @@ const Employees = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => { fetchEmployees(); }, []);
 
@@ -48,14 +49,18 @@ const Employees = () => {
     };
 
     const handleDelete = async (id) => {
+        setDeletingId(id);
         try {
             await deleteEmployee(id);
             toast.success('Employee deleted successfully');
             fetchEmployees();
         } catch (err) {
             toast.error('Failed to delete employee');
+        } finally {
+            setDeletingId(null);
         }
     };
+
 
     const filteredEmployees = employees.filter(e =>
         e.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -85,9 +90,9 @@ const Employees = () => {
                 </div>
 
                 {loading ? (
-                    <div className="p-12 text-center text-gray-400">Loading workforce...</div>
+                    <div className="p-12 text-center text-blue-600">Loading workforce...</div>
                 ) : filteredEmployees.length > 0 ? (
-                    <EmployeeList employees={filteredEmployees} onEdit={handleEdit} onDelete={handleDelete} />
+                    <EmployeeList employees={filteredEmployees} onEdit={handleEdit} onDelete={handleDelete} deletingId={deletingId} />
                 ) : (
                     <EmptyState
                         title="No Employees Found"

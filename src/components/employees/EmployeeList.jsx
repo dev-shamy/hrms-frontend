@@ -2,8 +2,15 @@ import React, { useState } from 'react';
 import { Trash2, Edit2, Check, X } from 'lucide-react';
 import Badge from '../common/Badge';
 
-const EmployeeList = ({ employees, onEdit, onDelete }) => {
+const EmployeeList = ({ employees, onEdit, onDelete, deletingId }) => {
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
+    // Clear confirmation state after deletion is complete or failed
+    React.useEffect(() => {
+        if (!deletingId) {
+            setConfirmDeleteId(null);
+        }
+    }, [deletingId]);
 
     return (
         <div className="overflow-x-auto">
@@ -36,20 +43,29 @@ const EmployeeList = ({ employees, onEdit, onDelete }) => {
                             <td className="px-6 py-4 text-right">
                                 {confirmDeleteId === emp.employee_id ? (
                                     <div className="flex justify-end items-center gap-2 animate-in slide-in-from-right-2 duration-200">
-                                        <span className="text-xs font-bold text-rose-500 mr-1">Confirm?</span>
+                                        <span className="text-xs font-bold text-rose-500 mr-1">
+                                            {deletingId === emp.employee_id ? "Deleting..." : "Confirm?"}
+                                        </span>
                                         <button
+                                            disabled={deletingId === emp.employee_id}
                                             onClick={() => {
                                                 onDelete(emp.employee_id);
-                                                setConfirmDeleteId(null);
+                                                // We don't clear confirmDeleteId here because it would hide the loading status
                                             }}
-                                            className="p-1.5 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-all shadow-sm"
+                                            className="p-1.5 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-all shadow-sm disabled:opacity-50"
                                             title="Confirm Delete"
                                         >
-                                            <Check size={14} />
+                                            {deletingId === emp.employee_id ? (
+                                                <svg className="animate-spin h-3.5 w-3.5 text-white" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            ) : <Check size={14} />}
                                         </button>
                                         <button
+                                            disabled={deletingId === emp.employee_id}
                                             onClick={() => setConfirmDeleteId(null)}
-                                            className="p-1.5 bg-gray-100 text-gray-500 rounded-md hover:bg-gray-200 transition-all"
+                                            className="p-1.5 bg-gray-100 text-gray-500 rounded-md hover:bg-gray-200 transition-all disabled:opacity-50"
                                             title="Cancel"
                                         >
                                             <X size={14} />

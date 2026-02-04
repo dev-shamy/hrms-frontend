@@ -11,7 +11,7 @@ const Attendance = () => {
     const [employees, setEmployees] = useState([]);
     const [attendanceData, setAttendanceData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [selectedDate, setSelectedDate] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         const init = async () => {
@@ -31,6 +31,7 @@ const Attendance = () => {
     }, []);
 
     const handleMark = async (data) => {
+        setSubmitting(true);
         try {
             await markAttendance(data);
             const updated = await getAttendance(data.employee_id);
@@ -38,13 +39,19 @@ const Attendance = () => {
             toast.success("Attendance marked successfully!");
         } catch (err) {
             toast.error(err.response?.data?.detail || "Failed to mark attendance");
+        } finally {
+            setSubmitting(false);
         }
     };
+
+
+    const [selectedDate, setSelectedDate] = useState('');
 
     const flatRecords = Object.values(attendanceData).flat().sort((a, b) => new Date(b.date) - new Date(a.date));
     const filteredRecords = selectedDate ? flatRecords.filter(r => r.date === selectedDate) : flatRecords;
 
-    if (loading) return <div className="p-12 text-center text-gray-400">Loading attendance system...</div>;
+    if (loading) return <div className="p-12 text-center text-blue-600">Loading attendance system...</div>;
+
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -57,9 +64,10 @@ const Attendance = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 <div className="lg:col-span-1 space-y-8">
-                    <MarkAttendance employees={employees} onMark={handleMark}/>
+                    <MarkAttendance employees={employees} onMark={handleMark} loading={submitting} />
                     <AttendanceSummaryCard employees={employees} attendanceData={attendanceData} />
                 </div>
+
 
                 <div className="lg:col-span-2">
                     <Card

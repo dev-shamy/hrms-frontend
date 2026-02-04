@@ -52,7 +52,7 @@ const Dashboard = () => {
 
   if (loading)
     return (
-      <div className="h-64 flex items-center justify-center text-gray-400">
+      <div className="h-64 flex items-center justify-center text-blue-600">
         Loading dashboard...
       </div>
     );

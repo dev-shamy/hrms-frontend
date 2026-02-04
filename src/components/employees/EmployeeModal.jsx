@@ -10,6 +10,7 @@ const EmployeeModal = ({ isOpen, onClose, onSubmit, employee }) => {
     email: "",
     department: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (employee) {
@@ -31,7 +32,7 @@ const EmployeeModal = ({ isOpen, onClose, onSubmit, employee }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (employee) {
@@ -54,7 +55,14 @@ const EmployeeModal = ({ isOpen, onClose, onSubmit, employee }) => {
       }
     }
 
-    onSubmit(formData);
+    try {
+      setIsSubmitting(true);
+      await onSubmit(formData);
+    } catch (error) {
+      console.error("Submission failed:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClass =
@@ -138,9 +146,10 @@ const EmployeeModal = ({ isOpen, onClose, onSubmit, employee }) => {
               <option value="Design">Design</option>
             </select>
           </div>
-          <Button type="submit" fullWidth className="py-4 mt-2">
+          <Button type="submit" fullWidth className="py-4 mt-2" loading={isSubmitting}>
             {employee ? "Update Employee" : "Add Employee"}
           </Button>
+
         </form>
       </div>
     </div>

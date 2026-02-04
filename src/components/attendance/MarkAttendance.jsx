@@ -58,8 +58,8 @@ const MarkAttendance = ({ employees, onMark, loading, className = "" }) => {
                         </select>
                     </div>
                 </div>
-                <Button type="submit" fullWidth disabled={loading} className="py-3 mt-2">
-                    {loading ? 'Submitting...' : 'Confirm Attendance'}
+                <Button type="submit" fullWidth loading={loading} className="py-3 mt-2">
+                    Confirm Attendance
                 </Button>
             </form>
         </Card>
